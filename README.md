@@ -25,6 +25,8 @@ Para usar o script, siga as etapas abaixo:
 
 **Observação:** Certifique-se de confirmar se deseja continuar após cada operação.
 
+**Link para o vídeo do robo funcionando** https://drive.google.com/file/d/1IEIa8oVwepsWCgkhVujdFgVW0fLM81hd/view?usp=drive_link
+
 ## Contribuição
 Sinta-se à vontade para contribuir para este projeto através de sugestões, relatórios de problemas ou envio de solicitações pull.
 
