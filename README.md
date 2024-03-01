@@ -30,9 +30,3 @@ Sinta-se à vontade para contribuir para este projeto através de sugestões, re
 
 ## Autor
 Este script foi desenvolvido por Murilo de Souza Prianti Silva.
-
---- 
-
-*Lembre-se de substituir "[Seu Nome]" pelo seu nome real ou identificador de preferência. Além disso, certifique-se de fornecer informações adicionais ou personalizações necessárias.*
-
-**Nota:** Certifique-se de ajustar o ambiente e as dependências para TypeScript, pois o TypeScript requer uma configuração e compilação adequadas antes da execução.
