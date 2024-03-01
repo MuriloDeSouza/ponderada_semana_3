@@ -8,6 +8,17 @@ from yaspin import yaspin
 import typer
 import time
 
+# Classe para mover o robo com as juntas
+class InteliArm(pydobot.Dobot):
+    def __init__(self, port=None, verbose=False):
+        super().__init__(port=port, verbose=verbose)
+    
+    def movej_to(self, x, y, z, r, wait=True):
+        super()._set_ptp_cmd(x, y, z, r, mode=pydobot.enums.PTPMode.MOVJ_XYZ, wait=wait)
+
+    def movel_to(self, x, y, z, r, wait=True):
+        super()._set_ptp_cmd(x, y, z, r, mode=pydobot.enums.PTPMode.MOVL_XYZ, wait=wait)
+
 #Instância de aplicação
 app = typer.Typer()
 
@@ -23,13 +34,13 @@ porta_escolhida = inquirer.prompt([
 ])["porta"]
 
 # Cria uma instância do robô
-robo = pydobot.Dobot(port=porta_escolhida, verbose=False)
+robo = InteliArm(port=porta_escolhida, verbose=False)
 
 @app.command()
 def movimentos():
     # realiza lista de perguntas para o usuário
     perguntas = [
-        inquirer.List("movimento", message="Qual movimento você deseja que o robô faça?", choices=["Home", "Ligar_Ferramenta","Desligar_Ferramenta","Posição_Atual","Vá_até: ", "Sair", "Mover em X:", "Sair", "Mover em Y:", "Sair", "Mover em Z:"])
+        inquirer.List("movimento", message="Qual movimento você deseja que o robô faça?", choices=["Home", "Ligar_Ferramenta","Desligar_Ferramenta","Posição_Atual","Vá_até(x,y,z,r):","Qual eixo vc quer mexer?","Sair"])
     ]
     continuar = True
     while continuar:
@@ -50,7 +61,7 @@ def processar(dados):
     if operacao == "Home":
         robo.speed(100, 100)
         spinner.start()
-        robo.move_to(238, -11, 150, 0, wait=True)
+        robo.movej_to(238, -11, 150, 0, wait=True)
         posicao_atual = robo.pose()
         print(f"Posição atual: {posicao_atual}")
         spinner.stop()
@@ -72,36 +83,57 @@ def processar(dados):
         spinner.stop()
 
 
-    elif operacao == "Vá_até: ":
+    elif operacao == "Vá_até(x,y,z,r):":
         x = typer.prompt("Digite o valor de X", type=float)
         y = typer.prompt("Digite o valor de Y", type=float)
         z = typer.prompt("Digite o valor de Z", type=float)
+        r = typer.prompt("Digite o valor de R", type=float)
 
         spinner.start()
-        robo.move_to(x, y, z, 0, wait=True)
+        robo.movej_to(x, y, z, r, wait=True)
         posicao_atual = robo.pose()
         spinner.stop()
-    
-    elif operacao == "Mover em X:":
-        x = typer.prompt("Digite o valor de X", type=float)
-        spinner.start()
-        robo.move_to(x, 0, 0, 0, wait=True)
-        posicao_atual = robo.pose()
-        spinner.stop()
-    
-    elif operacao == "Mover em Y:":
-        x = typer.prompt("Digite o valor de Y", type=float)
-        spinner.start()
-        robo.move_to(0, y, 0, 0, wait=True)
-        posicao_atual = robo.pose()
-        spinner.stop()
-    
-    elif operacao == "Mover em Z:":
-        x = typer.prompt("Digite o valor de Z", type=float)
-        spinner.start()
-        robo.move_to(0, 0, z, 0, wait=True)
-        posicao_atual = robo.pose()
-        spinner.stop()
+
+    elif operacao == "Qual eixo vc quer mexer?":
+        eixos = inquirer.prompt([
+            inquirer.List("eixo", choices=["X", "Y", "Z", "R"])
+        ])   
+        operacao_1 = eixos["eixo"]   
+        if operacao_1 == "X":
+            posicao_atual = robo.pose()
+            x = typer.prompt("Digite o valor de X", type=float)
+            robo.speed(100, 100)
+            spinner.start()
+            robo.movej_to(posicao_atual[0]+x, posicao_atual[1], posicao_atual[2], posicao_atual[3], wait=True)
+            posicao_atual = robo.pose()
+            spinner.stop()
+
+        elif operacao_1 == "Y":
+            posicao_atual = robo.pose()
+            y = typer.prompt("Digite o valor de Y", type=float)
+            robo.speed(100, 100)
+            spinner.start()
+            robo.movej_to(posicao_atual[0], posicao_atual[1]+y, posicao_atual[2], posicao_atual[3], wait=True)
+            posicao_atual = robo.pose()
+            spinner.stop()
+
+        elif operacao_1 == "Z":
+            posicao_atual = robo.pose()
+            z = typer.prompt("Digite o valor de Z", type=float)
+            robo.speed(100, 100)
+            spinner.start()
+            robo.movej_to(posicao_atual[0], posicao_atual[1], posicao_atual[2]+z, posicao_atual[3], wait=True)
+            posicao_atual = robo.pose()
+            spinner.stop()
+
+        elif operacao_1 == "R":
+            posicao_atual = robo.pose()
+            r = typer.prompt("Digite o valor de X", type=float)
+            robo.speed(100, 100)
+            spinner.start()
+            robo.movej_to(posicao_atual[0], posicao_atual[1], posicao_atual[2], posicao_atual[3]+r, wait=True)
+            posicao_atual = robo.pose()
+            spinner.stop()
 
     elif operacao == "Sair":
         continuar = False
